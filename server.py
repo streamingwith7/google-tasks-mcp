@@ -54,12 +54,17 @@ def _get_tasks_service():
 # Create the MCP server
 # ---------------------------------------------------------------------------
 # The `name` shows up in Claude's UI when the connector is registered.
+# Use the PORT environment variable (Render sets this automatically).
+port = int(os.environ.get("PORT", 8000))
+
 mcp = FastMCP(
     name="Google Tasks",
     instructions=(
         "Manage Google Tasks. You can list task lists, view tasks, "
         "create new tasks, mark tasks complete, and delete tasks."
     ),
+    host="0.0.0.0",
+    port=port,
 )
 
 
@@ -261,8 +266,5 @@ def delete_task(
 # Start the server
 # ===========================================================================
 if __name__ == "__main__":
-    # Use the PORT environment variable (Render sets this automatically).
-    port = int(os.environ.get("PORT", 8000))
-
     # Run with streamable-http transport so Claude can connect remotely.
-    mcp.run(transport="streamable-http", host="0.0.0.0", port=port)
+    mcp.run(transport="streamable-http")
