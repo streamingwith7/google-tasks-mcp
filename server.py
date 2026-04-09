@@ -65,6 +65,12 @@ mcp = FastMCP(
     ),
     host="0.0.0.0",
     port=port,
+    # Stateless mode: each request is independent (no session tracking).
+    # This is required for remote MCP connectors like Claude, where
+    # requests may come from different servers/IPs.
+    stateless_http=True,
+    # Return JSON responses instead of SSE streams.
+    json_response=True,
 )
 
 
