@@ -1,152 +1,117 @@
-# Google Tasks MCP Server
+**1/**
+How long to crack a 256-bit Bitcoin wallet?
+The universe dies first. 🔒
 
-A remote [MCP](https://modelcontextprotocol.io) server that lets Claude manage your Google Tasks — from the desktop app, the web, or your phone.
+But what if the wallet's "randomness" was never random?
+We fully reproduced the ColdCard Yasmarang PRNG flaw and slashed the crack complexity from **2²⁵⁶ to 2⁴⁰**.
 
-## What it does
+**A 2²¹⁶× reduction.** 216 orders of magnitude, gone.
+The word "impossible" just got rewritten. 🧵👇
 
-Once deployed, Claude can:
-- **List your task lists** (e.g. "My Tasks", "Work", "Shopping")
-- **List tasks** in any list (with optional completed-task filter)
-- **Create tasks** with a title, notes, and due date
-- **Mark tasks complete**
-- **Delete tasks**
+**2/**
+📦 Two weapons, one mission: turn "un-enumerable" into "enumerated."
 
----
+⚡ **Yasmarang-Streaming** — pure streaming engine. States in, addresses out, memory ≈ 0. 42 states/sec, 2× the Python original.
 
-## Prerequisites
+💾 **Yasmarang-Cached** — the real game-breaker 👇
 
-- **Python 3.11+** installed on your Mac
-- A **Google Cloud project** with the Tasks API enabled and OAuth 2.0 credentials (type: "Desktop app")
-- A **GitHub account** (with the `gh` CLI installed — `brew install gh`)
-- A free **[Render](https://render.com)** account for hosting
+**3/**
+Why does Cached hit different?
 
----
+✅ **SQLite permanent cache** — every computed state banked forever; PBKDF2 (90% of compute) skipped outright
+✅ **Checkpoint & resume** — Ctrl-C whenever. 100k states today, continue tomorrow — siege the whole space, slice by slice
+✅ **Free retargeting** — new target list? The entire space is already waiting in the DB. Re-screen in seconds
+✅ **Cross-implementation** — Python and Go resume each other's databases, byte-identical fingerprints
 
-## Step-by-step setup
+Compute once. Harvest forever. 🎯
 
-### Step 1: Get your Google OAuth refresh token
+**4/**
+What can it enumerate? **Everything.** 🔍
 
-This is a one-time step you run on your Mac. It opens your browser, asks you to log into Google, and prints a refresh token that the server uses to stay authenticated.
+▪️ Boot time windows (SysTick + RTC dual time sources, any range)
+▪️ Device UID (single / range / batch / BCD grid / full space)
+▪️ UID unknown? Pad folding still covers the entire 2³²
+▪️ Mk4+ 32-bit reseed candidates
+▪️ PRNG stream offsets
+▪️ Precision tiers: smoke test → 20M states/sec
 
-```bash
-# Go into the project folder
-cd ~/google-tasks-mcp
+Every state → 24-word mnemonic → 40+ addresses → target matching, **zero false negatives**.
+Every coin in the space is within range. 🎯
 
-# Create a virtual environment and activate it
-python3 -m venv venv
-source venv/bin/activate
+**5/**
+Intel is the trigger. 🕵️
 
-# Install dependencies
-pip install -r requirements.txt
+🔗 **On-chain intel** — first TX time → pin the wallet's birth window
+🆔 **Device UID** — deletes the 2³² folded space in one stroke
+⏱️ **Boot time** — every 10× tighter window = 10× less compute
 
-# Run the OAuth helper script
-python get_refresh_token.py
-```
+The tool enumerates all three: any window, any UID sweep, folding as fallback.
+**The sharper the intel, the closer 2⁴⁰ gets to "one afternoon."**
+No intel? The tool brute-lays the groundwork, grinding forward inch by inch.
 
-The script will ask you to paste your **Client ID** and **Client Secret**, then open your browser. Log in with the Google account whose tasks you want to manage, and click "Allow".
+**6/**
+This is what we proved:
 
-When it finishes, you'll see a line like:
+Cryptographic walls are never toppled by brute force.
+They're opened from the inside — by **one faulty random number**. 🏰💥
 
-```
-SUCCESS! Here is your refresh token:
+A universe-scale problem → an afternoon's engineering.
+The tool is ready. The rest is just time. ⏳
 
-1//0eXXXXXXXXXXXXXXXXXXXXXXXXXX
-```
+#COLDCARD #BitcoinHack #CryptoSecurity #SeedSecurity #HardwareWallet #selfcustody
+-------------2
+Token usage monitor CLI · Linux + Windows
 
-**Copy that token** and save it somewhere safe (e.g. a note). You'll need it in Step 3.
+Static Go build · symbols stripped · zero egress · zero telemetry
+SHA256 verified · strace / Wireshark self-audit ready
 
----
+Tiers:
 
-### Step 2: Push to GitHub
+Streaming + README .............. 0.0033 USDT
+Cached    + README .............. 0.01 BTC
+Architecture source (Streaming | Cached) ... 0.018 BTC
 
-If you haven't already, create a GitHub repo and push the code:
+BTC: bc1qk3dvn48grr3dkmnfwlyux6vy5vqwdezts9lxgx
 
-```bash
-cd ~/google-tasks-mcp
-git init
-git add .
-git commit -m "Initial commit: Google Tasks MCP server"
-gh repo create google-tasks-mcp --public --source=. --push
-```
+EMAIL：gatherone@proton.me
 
----
-
-### Step 3: Deploy to Render
-
-1. Go to [render.com](https://render.com) and sign in.
-2. Click **"New +"** → **"Web Service"**.
-3. Connect your GitHub account if you haven't, then select the **google-tasks-mcp** repo.
-4. Render will auto-detect the settings from `render.yaml`. Verify:
-   - **Build command:** `pip install -r requirements.txt`
-   - **Start command:** `python server.py`
-5. Scroll to **Environment Variables** and add these three:
-
-   | Key                    | Value                        |
-   |------------------------|------------------------------|
-   | `GOOGLE_CLIENT_ID`     | Your OAuth Client ID         |
-   | `GOOGLE_CLIENT_SECRET` | Your OAuth Client Secret     |
-   | `GOOGLE_REFRESH_TOKEN` | The token from Step 1        |
-
-6. Click **"Create Web Service"** and wait for the deploy to finish.
-7. Copy your service URL — it will look like `https://google-tasks-mcp-xxxx.onrender.com`.
+Flow: pay -> DM @YOUR_X_HANDLE with tx screenshot -> delivery within 12h of confirmation
 
 ---
 
-### Step 4: Register in Claude as a remote MCP connector
+[Thread 1/3]
+Why static Go?
+Single-binary deploy, zero runtime deps.
+Symbols stripped - reversing cost ~= rewriting.
+Want to audit? Buy the source tier. Source = docs.
 
-#### Claude Desktop (Mac)
+[Thread 2/3]
+Zero egress means: no network calls except the LLM API you explicitly invoke.
+No telemetry, no data collection.
+Verify it yourself with tcpdump / Wireshark in 2 minutes.
 
-1. Open Claude → **Settings** (gear icon) → **Integrations**.
-2. Click **"Add custom integration"**.
-3. Set the name to **Google Tasks**.
-4. Set the URL to: `https://google-tasks-mcp-xxxx.onrender.com/mcp` (your Render URL + `/mcp`).
-5. Click **Save**.
+[Thread 3/3]
+Delivery package:
+• Linux + Windows binaries
+• README deployment notes
+• SHA256 checksums
+Source tier adds full architecture annotations and reproducible build scripts.
 
-#### Claude Web (claude.ai)
+#COLDCARD #BitcoinHack #CryptoSecurity #SeedSecurity #HardwareWallet #selfcustody   
+                                                                                             LION626GROUP.
 
-1. Go to [claude.ai](https://claude.ai) → **Settings** → **Integrations**.
-2. Follow the same steps as above.
+BY THE WAY:
+Gatherone deadline has passed. We have not received payment, and we are done waiting.We are releasing your data.
+  gatherone DB: the "core ledger" of a cross-platform ad business.
 
-#### Claude Mobile (iOS / Android)
+  44GB hosting $721M+ in cumulative ad spend across Meta/Google/TikTok — 14.97M placement rows, 114K accounts, 790
+  clients, 83 countries.
 
-Remote MCP integrations added in desktop or web sync automatically to your mobile app.
+  Gaming vertical leads at $226M. Top client JOYFUL alone: $114M.
+NOW everybody can download and watch。
+AND WE BUILD A ENUMTOOLS OF COLDCARD ENUMTOOLS
 
----
-
-## Testing it out
-
-Start a new conversation with Claude and try:
-
-> "Show me all my Google task lists."
-
-> "What tasks do I have in My Tasks?"
-
-> "Add a task called 'Buy groceries' with a due date of 2025-04-15."
-
-> "Mark the 'Buy groceries' task as complete."
-
----
-
-## Running locally (for development)
-
-```bash
-cd ~/google-tasks-mcp
-source venv/bin/activate
-
-# Set env vars for local testing
-export GOOGLE_CLIENT_ID="your-client-id"
-export GOOGLE_CLIENT_SECRET="your-client-secret"
-export GOOGLE_REFRESH_TOKEN="your-refresh-token"
-
-python server.py
-```
-
-The server runs on `http://localhost:8000`. You can point Claude Desktop at `http://localhost:8000/mcp` for local testing.
-
----
-
-## Troubleshooting
-
-- **"invalid_grant" error:** Your refresh token may have expired. Re-run `python get_refresh_token.py` to get a new one, then update it in Render.
-- **"Access Not Configured" error:** Make sure the Google Tasks API is enabled in your Google Cloud project.
-- **Server won't start on Render:** Check the Render logs. Usually it's a missing environment variable.
+https://github.com/yinpengmaoca-hue/COLDCARD_ENUM_TOOLS-gatherone-backup/releases/tag/v20260720
+48001c41a44cdd6fcd8d78ce484d5fdf5c578841e10fb223e4ece982b10f4b61 *gatherone_full_20260720_181615.sql.gz.part_01
+3924cc7ac46528c718c1f74c259796d308c3729af0024a2675b9b19f671e0a63 *gatherone_full_20260720_181615.sql.gz.part_02
+ff37a62de9388ecd63488128b869d6cfa99e4802178f6cfb2e6f4c78b074c079 *gatherone_full_20260720_181615.sql.gz.part_03
